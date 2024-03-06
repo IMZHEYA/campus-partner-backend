@@ -1,0 +1,20 @@
+# DataSource Config
+spring:
+  application:
+    name: user-center-backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: dyz200472
+    url: jdbc:mysql://localhost:3306/zhezi
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  profiles:
+    active: dev
+server:
+  port: 8080
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+
