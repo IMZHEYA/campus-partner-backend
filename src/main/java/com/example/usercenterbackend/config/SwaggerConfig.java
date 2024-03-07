@@ -33,7 +33,7 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .select()
                 // 这里一定要标注你控制器的位置
-                .apis(RequestHandlerSelectors.basePackage("com.yupi.usercenter.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.example.usercenterbackend.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
