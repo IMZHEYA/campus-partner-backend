@@ -1,13 +1,13 @@
 package com.example.usercenterbackend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.usercenterbackend.modal.domain.User ;
+import com.example.usercenterbackend.modal.domain.User;
 
 /**
-* @author 13425
-* @description 针对表【user(用户)】的数据库操作Service
-* @createDate 2024-03-06 19:21:19
-*/
+ * @author 13425
+ * @description 针对表【user(用户)】的数据库操作Service
+ * @createDate 2024-03-06 19:21:19
+ */
 public interface UserService extends IService<User> {
-
+    Long userRegister(String userAccount, String userPassword, String checkPassword);
 }
