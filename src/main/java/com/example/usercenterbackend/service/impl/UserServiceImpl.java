@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.example.usercenterbackend.constant.UserConstant.USER_LOGIN_STATE;
+
 /**
  * @author 13425
  * @description 针对表【user(用户)】的数据库操作Service实现
@@ -29,8 +31,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private UserMapper userMapper;
 
     final String SALT = "yupi";
-    //用户登录态键
-    private static final String USER_LOGIN_STATE = "userLoginState";
+
 
     @Override
     public Long userRegister(String userAccount, String userPassword, String checkPassword) {
@@ -108,19 +109,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return null;
         }
         //用户信息脱敏
+        User safetyUser = getSafetyUser(user);
+        //将用户信息保存到session中
+        request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
+        return safetyUser;
+    }
+
+    @Override
+    public User getSafetyUser(User user) {
         User safetyUser = new User();
         safetyUser.setId(user.getId());
         safetyUser.setUsername(user.getUsername());
         safetyUser.setUserAccount(user.getUserAccount());
         safetyUser.setAvatarUrl(user.getAvatarUrl());
         safetyUser.setGender(user.getGender());
-        safetyUser.setUserPassword(user.getUserPassword());
         safetyUser.setPhone(user.getPhone());
         safetyUser.setEmail(user.getEmail());
         safetyUser.setUserStatus(user.getUserStatus());
+        safetyUser.setUserRole(user.getUserRole());
         safetyUser.setCreateTime(user.getCreateTime());
-        //将用户信息保存到session中
-        request.getSession().setAttribute(USER_LOGIN_STATE,safetyUser);
         return safetyUser;
     }
 }
