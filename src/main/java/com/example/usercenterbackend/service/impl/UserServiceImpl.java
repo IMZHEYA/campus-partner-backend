@@ -35,9 +35,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
 
     @Override
-    public Long userRegister(String userAccount, String userPassword, String checkPassword) {
+    public Long userRegister(String userAccount, String userPassword, String checkPassword,String userCode) {
         //1.账户，密码，校验码为空
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
+        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword,userCode)) {
             return null;
         }
         // 2.账户小于4位
@@ -46,6 +46,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         // 3.密码，校验码小于8位
         if (userPassword.length() < 8 || checkPassword.length() < 8) {
+            return null;
+        }
+        //星球编号 <= 5位
+        if(userCode.length() > 5){
             return null;
         }
         // 4.账户包含特殊字符（正则表达式）
@@ -65,12 +69,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (count > 0) {
             return null;
         }
+        //星球编号不能重复
+        queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userCode", userCode);
+        count = userMapper.selectCount(queryWrapper);
+        if (count > 0) {
+            return null;
+        }
         //校验完成后，加密
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
         //注册成功，插入数据到数据库
         User user = new User();
         user.setUserAccount(userAccount);
         user.setUserPassword(encryptPassword);
+        user.setUserCode(userCode);
         boolean result = this.save(user);
         if (!result) {
             return null;
@@ -126,6 +138,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         safetyUser.setGender(user.getGender());
         safetyUser.setPhone(user.getPhone());
         safetyUser.setEmail(user.getEmail());
+        safetyUser.setUserCode(user.getUserCode());
         safetyUser.setUserStatus(user.getUserStatus());
         safetyUser.setUserRole(user.getUserRole());
         safetyUser.setCreateTime(user.getCreateTime());

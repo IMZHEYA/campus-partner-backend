@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
  * @createDate 2024-03-06 19:21:19
  */
 public interface UserService extends IService<User> {
-    Long userRegister(String userAccount, String userPassword, String checkPassword);
+    Long userRegister(String userAccount, String userPassword, String checkPassword,String userCode);
 
     User userLogin(String userAccount, String userPassword, HttpServletRequest request);
 
