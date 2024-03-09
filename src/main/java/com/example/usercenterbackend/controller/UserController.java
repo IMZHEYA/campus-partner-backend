@@ -49,6 +49,22 @@ public class UserController {
     }
 
     /**
+     * 用户注销
+     * @param
+     * @param request
+     * @return
+     */
+
+    @PostMapping("/login")
+    public Integer userLogin(HttpServletRequest request){
+        if(request == null){
+            return null;
+        }
+        return userService.userLogout(request);
+
+    }
+
+    /**
      * 查询用户
      * @param username
      * @param request
