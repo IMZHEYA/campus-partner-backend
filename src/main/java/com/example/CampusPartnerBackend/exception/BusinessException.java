@@ -1,6 +1,6 @@
-package com.example.usercenterbackend.exception;
+package com.example.CampusPartnerBackend.exception;
 
-import com.example.usercenterbackend.common.ErrorCode;
+import com.example.CampusPartnerBackend.common.ErrorCode;
 
 /**
  * 自定义异常类

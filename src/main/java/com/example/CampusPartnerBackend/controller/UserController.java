@@ -1,21 +1,20 @@
-package com.example.usercenterbackend.controller;
+package com.example.CampusPartnerBackend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.example.usercenterbackend.common.BaseResponse;
-import com.example.usercenterbackend.common.ErrorCode;
-import com.example.usercenterbackend.common.ResultUtils;
-import com.example.usercenterbackend.constant.UserConstant;
-import com.example.usercenterbackend.exception.BusinessException;
-import com.example.usercenterbackend.modal.domain.User;
-import com.example.usercenterbackend.modal.domain.request.UserLoginRequest;
-import com.example.usercenterbackend.modal.domain.request.UserRegisterRequest;
-import com.example.usercenterbackend.service.UserService;
+import com.example.CampusPartnerBackend.common.BaseResponse;
+import com.example.CampusPartnerBackend.common.ErrorCode;
+import com.example.CampusPartnerBackend.common.ResultUtils;
+import com.example.CampusPartnerBackend.constant.UserConstant;
+import com.example.CampusPartnerBackend.exception.BusinessException;
+import com.example.CampusPartnerBackend.modal.domain.User;
+import com.example.CampusPartnerBackend.modal.domain.request.UserLoginRequest;
+import com.example.CampusPartnerBackend.modal.domain.request.UserRegisterRequest;
+import com.example.CampusPartnerBackend.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

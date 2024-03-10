@@ -1,7 +1,7 @@
-package com.example.usercenterbackend.Mapper;
+package com.example.CampusPartnerBackend.Mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.usercenterbackend.modal.domain.User ;
+import com.example.CampusPartnerBackend.modal.domain.User ;
 
 /**
 * @author 13425

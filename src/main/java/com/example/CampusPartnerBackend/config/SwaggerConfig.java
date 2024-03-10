@@ -1,4 +1,4 @@
-package com.example.usercenterbackend.config; /**
+package com.example.CampusPartnerBackend.config; /**
  * @author Shier
  * @date 2023/02/02
  * 自定义 Swagger 接口文档的配置
@@ -33,7 +33,7 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .select()
                 // 这里一定要标注你控制器的位置
-                .apis(RequestHandlerSelectors.basePackage("com.example.usercenterbackend.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.example.CampusPartnerBackend.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }

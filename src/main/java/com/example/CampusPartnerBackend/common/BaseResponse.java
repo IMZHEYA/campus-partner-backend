@@ -1,4 +1,4 @@
-package com.example.usercenterbackend.common;
+package com.example.CampusPartnerBackend.common;
 
 import lombok.Data;
 

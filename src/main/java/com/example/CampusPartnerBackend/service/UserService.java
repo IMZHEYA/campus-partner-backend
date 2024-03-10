@@ -1,9 +1,10 @@
-package com.example.usercenterbackend.service;
+package com.example.CampusPartnerBackend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.usercenterbackend.modal.domain.User;
+import com.example.CampusPartnerBackend.modal.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author 13425
@@ -18,4 +19,6 @@ public interface UserService extends IService<User> {
     User getSafetyUser(User user);
 
     int userLogout(HttpServletRequest request);
+
+    List<User> searchUsersBytags(List<String> tags);
 }

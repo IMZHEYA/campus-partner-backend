@@ -1,14 +1,20 @@
-package com.example.usercenterbackend.service;
-import java.util.Date;
+package com.example.CampusPartnerBackend.service;
 
-import com.example.usercenterbackend.modal.domain.User;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.CampusPartnerBackend.common.ErrorCode;
+import com.example.CampusPartnerBackend.exception.BusinessException;
+import com.example.CampusPartnerBackend.modal.domain.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class UserServiceTest {
     @Resource
@@ -29,6 +35,14 @@ class UserServiceTest {
         System.out.println(user.getId());
         Assertions.assertTrue(result);
 
+    }
+
+
+    @Test
+    public void searchUsersBytags() {
+        List<String> tags = Arrays.asList("java", "python");
+        List<User> userList = userService.searchUsersBytags(tags);
+        Assertions.assertNotNull(userList);
     }
 
 }

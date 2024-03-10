@@ -1,4 +1,4 @@
-package com.example.usercenterbackend.constant;
+package com.example.CampusPartnerBackend.constant;
 
 public class UserConstant {
     //用户登录态键

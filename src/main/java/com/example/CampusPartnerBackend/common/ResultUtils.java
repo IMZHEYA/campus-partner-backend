@@ -1,4 +1,4 @@
-package com.example.usercenterbackend.common;
+package com.example.CampusPartnerBackend.common;
 
 /**
  * 返回工具类

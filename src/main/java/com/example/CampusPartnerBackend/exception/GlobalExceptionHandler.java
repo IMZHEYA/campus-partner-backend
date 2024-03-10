@@ -1,8 +1,8 @@
-package com.example.usercenterbackend.exception;
+package com.example.CampusPartnerBackend.exception;
 
-import com.example.usercenterbackend.common.BaseResponse;
-import com.example.usercenterbackend.common.ErrorCode;
-import com.example.usercenterbackend.common.ResultUtils;
+import com.example.CampusPartnerBackend.common.BaseResponse;
+import com.example.CampusPartnerBackend.common.ErrorCode;
+import com.example.CampusPartnerBackend.common.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
