@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
@@ -205,6 +206,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return true;
         }).map(user -> getSafetyUser(user)).collect(Collectors.toList());
 //        return userList.stream().map(user -> getSafetyUser(user)).collect(Collectors.toList());
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        if(id < 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User user = userMapper.selectById(id);
+        if(user == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User safetyUser = getSafetyUser(user);
+        return safetyUser;
     }
 }
 

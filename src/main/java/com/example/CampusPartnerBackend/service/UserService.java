@@ -21,4 +21,6 @@ public interface UserService extends IService<User> {
     int userLogout(HttpServletRequest request);
 
     List<User> searchUsersBytags(List<String> tags);
+
+    User getUserById(Long id);
 }

@@ -111,11 +111,26 @@ public class UserController {
      */
     @GetMapping("/search/tags")
     public BaseResponse<List<User>> searchUsersByTags(@RequestParam(required = false) List<String> tags) {
-        if(CollectionUtils.isEmpty(tags)){
+        if (CollectionUtils.isEmpty(tags)) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
         List<User> userList = userService.searchUsersBytags(tags);
         return ResultUtils.success(userList);
+    }
+
+    /**
+     * 获取当前登录的用户信息
+     */
+    @GetMapping("/current")
+    public BaseResponse<User> getCurrentUser(HttpServletRequest request) {
+        Object useObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        User user = (User) useObj;
+        if(user == null){
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        Long userId = user.getId();
+        User currentUser = userService.getUserById(userId);
+        return ResultUtils.success(currentUser);
     }
 
     /**
