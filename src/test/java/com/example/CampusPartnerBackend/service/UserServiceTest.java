@@ -1,6 +1,7 @@
 package com.example.CampusPartnerBackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.CampusPartnerBackend.Mapper.UserMapper;
 import com.example.CampusPartnerBackend.common.ErrorCode;
 import com.example.CampusPartnerBackend.exception.BusinessException;
 import com.example.CampusPartnerBackend.modal.domain.User;
@@ -19,6 +20,8 @@ import java.util.stream.Collectors;
 class UserServiceTest {
     @Resource
     private UserService userService;
+    @Resource
+    private UserMapper userMapper;
 
     @Test
     void test(){
@@ -43,6 +46,13 @@ class UserServiceTest {
         List<String> tags = Arrays.asList("java", "python");
         List<User> userList = userService.searchUsersBytags(tags);
         Assertions.assertNotNull(userList);
+    }
+
+
+    @Test
+    void test1(){
+        //期望返回1但实际返回了多条
+//        User user = userMapper.selectOne(null);
     }
 
 }

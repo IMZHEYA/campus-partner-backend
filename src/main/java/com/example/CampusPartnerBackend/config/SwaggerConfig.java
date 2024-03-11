@@ -44,8 +44,8 @@ public class SwaggerConfig {
      */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("无敌鸭用户中心")
-                .description("无敌鸭用户中心接口文档")
+                .title("无敌鸭伙伴匹配")
+                .description("无敌鸭伙伴匹配接口文档")
                 .termsOfServiceUrl("https://github.com/Serendipityzhezi")
                 .contact(new Contact("诨号无敌鸭", "https://blog.csdn.net/m0_74870396?spm=1000.2115.3001.5343","1342558165@qq.com"))
                 .version("1.0")

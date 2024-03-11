@@ -11,6 +11,7 @@ import com.example.CampusPartnerBackend.modal.domain.request.UserLoginRequest;
 import com.example.CampusPartnerBackend.modal.domain.request.UserRegisterRequest;
 import com.example.CampusPartnerBackend.service.UserService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -103,6 +104,18 @@ public class UserController {
         }
         boolean b = userService.removeById(id);
         return ResultUtils.success(b);
+    }
+
+    /**
+     * 根据标签查询用户
+     */
+    @GetMapping("/search/tags")
+    public BaseResponse<List<User>> searchUsersByTags(@RequestParam(required = false) List<String> tags) {
+        if(CollectionUtils.isEmpty(tags)){
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        List<User> userList = userService.searchUsersBytags(tags);
+        return ResultUtils.success(userList);
     }
 
     /**

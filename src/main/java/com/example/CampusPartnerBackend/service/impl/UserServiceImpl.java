@@ -17,9 +17,7 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -198,6 +196,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             }
             Set<String> tagSet = gson.fromJson(Usertags, new TypeToken<Set<String>>() {
             }.getType());
+            tagSet = Optional.ofNullable(tagSet).orElse(new HashSet<>());
             for (String tag : tags) {
                 if (!tagSet.contains(tag)) {
                     return false;
