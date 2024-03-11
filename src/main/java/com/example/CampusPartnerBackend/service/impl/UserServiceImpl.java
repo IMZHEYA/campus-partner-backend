@@ -3,6 +3,7 @@ package com.example.CampusPartnerBackend.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.CampusPartnerBackend.common.ErrorCode;
+import com.example.CampusPartnerBackend.constant.UserConstant;
 import com.example.CampusPartnerBackend.exception.BusinessException;
 import com.example.CampusPartnerBackend.service.UserService;
 import com.example.CampusPartnerBackend.modal.domain.User;
@@ -11,7 +12,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
@@ -219,6 +219,54 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         User safetyUser = getSafetyUser(user);
         return safetyUser;
+    }
+
+    /**
+     * 是否是管理员
+     */
+    public boolean isAdmin(HttpServletRequest request) {
+        Object userobj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        User user = (User) userobj;
+        if (user == null || user.getUserRole() != UserConstant.ADMIN_ROLE) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean isAdmin(User loginUser) {
+        if (loginUser == null || loginUser.getUserRole() != UserConstant.ADMIN_ROLE) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public User getLoginUser(HttpServletRequest request) {
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User user = (User) userObj;
+        if(user == null){
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        User safetyUser = getSafetyUser(user);
+        return safetyUser;
+    }
+
+    @Override
+    public int updateUser(User user, User loginUser) {
+        Long userId = user.getId();
+        if(userId <= 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if(!isAdmin(loginUser) && userId != loginUser.getId()){
+            throw new BusinessException(ErrorCode.NO_AUTH);
+        }
+        User user1 = userMapper.selectById(userId);
+        if(user1 == null){
+            throw new BusinessException(ErrorCode.NULL_ERROR);
+        }
+        int i = userMapper.updateById(user);
+        return i;
     }
 }
 

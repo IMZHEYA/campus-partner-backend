@@ -10,6 +10,7 @@ import com.example.CampusPartnerBackend.modal.domain.User;
 import com.example.CampusPartnerBackend.modal.domain.request.UserLoginRequest;
 import com.example.CampusPartnerBackend.modal.domain.request.UserRegisterRequest;
 import com.example.CampusPartnerBackend.service.UserService;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -82,7 +83,7 @@ public class UserController {
      */
     @GetMapping("/search")
     public BaseResponse<List<User>> searchUser(String username, HttpServletRequest request) {
-        if (!isAdmin(request)) {
+        if (!userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -99,7 +100,7 @@ public class UserController {
      */
     @PostMapping("/delete")
     public BaseResponse<Boolean> deleteUser(@RequestBody Long id, HttpServletRequest request) {
-        if (id < 0 || !isAdmin(request)) {
+        if (id < 0 || !userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         boolean b = userService.removeById(id);
@@ -125,7 +126,7 @@ public class UserController {
     public BaseResponse<User> getCurrentUser(HttpServletRequest request) {
         Object useObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
         User user = (User) useObj;
-        if(user == null){
+        if (user == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
         Long userId = user.getId();
@@ -134,14 +135,21 @@ public class UserController {
     }
 
     /**
-     * 是否是管理员
+     * 更新用户信息
+     *
+     * @param user      要修改的用户
+     * @param request 请求参数
+     * @return
      */
-    public boolean isAdmin(HttpServletRequest request) {
-        Object userobj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
-        User user = (User) userobj;
-        if (user == null || user.getUserRole() != UserConstant.ADMIN_ROLE) {
-            return false;
+    @PostMapping("/update")
+    public BaseResponse<Integer> updateUser(@RequestBody User user, HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        if(user == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        return true;
+        int result = userService.updateUser(user, loginUser);
+        return ResultUtils.success(result);
     }
+
+
 }

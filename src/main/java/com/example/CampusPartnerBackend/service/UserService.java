@@ -23,4 +23,13 @@ public interface UserService extends IService<User> {
     List<User> searchUsersBytags(List<String> tags);
 
     User getUserById(Long id);
+
+    boolean isAdmin(HttpServletRequest request);
+
+    boolean isAdmin(User loginUser);
+
+    User getLoginUser(HttpServletRequest request);
+
+
+    int updateUser(User user ,User loginUser);
 }
