@@ -14,8 +14,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @SpringBootTest
@@ -24,6 +23,8 @@ class UserServiceTest {
     private UserService userService;
     @Resource
     private UserMapper userMapper;
+
+    private ExecutorService executorService = new ThreadPoolExecutor(16, 1000, 10000, TimeUnit.MINUTES, new ArrayBlockingQueue<>(10000));
 
 
     @Test
@@ -141,7 +142,7 @@ class UserServiceTest {
                 CompletableFuture future = CompletableFuture.runAsync(()->{
                     System.out.println(Thread.currentThread().getName());
                     userService.saveBatch(userList, 100);
-                });
+                },executorService);
 
             futureList.add(future);
         }
