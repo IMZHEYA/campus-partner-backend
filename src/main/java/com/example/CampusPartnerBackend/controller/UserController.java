@@ -1,6 +1,7 @@
 package com.example.CampusPartnerBackend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.CampusPartnerBackend.common.BaseResponse;
 import com.example.CampusPartnerBackend.common.ErrorCode;
 import com.example.CampusPartnerBackend.common.ResultUtils;
@@ -151,6 +152,13 @@ public class UserController {
         }
         int result = userService.updateUser(user, loginUser);
         return ResultUtils.success(result);
+    }
+
+    @GetMapping("/recommend")
+    public BaseResponse<Page<User>> recommendUser(@RequestParam int pageSize,int pageNum){
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        Page<User> page = userService.page(new Page<>(pageNum, pageSize), queryWrapper);
+        return ResultUtils.success(page);
     }
 
 

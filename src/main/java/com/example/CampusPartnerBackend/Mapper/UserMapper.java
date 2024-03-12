@@ -2,6 +2,7 @@ package com.example.CampusPartnerBackend.Mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.CampusPartnerBackend.modal.domain.User ;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author 13425
