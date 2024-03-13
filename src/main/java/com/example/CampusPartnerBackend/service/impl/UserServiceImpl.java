@@ -15,6 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
@@ -44,6 +45,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     final String SALT = "yupi";
 
@@ -281,6 +285,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User loginUser = getLoginUser(request);
         String redisKey = String.format("Campus:partner:%s",loginUser.getId());
         Page<User> userList = (Page<User>) redisTemplate.opsForValue().get(redisKey);
+
         //缓存中有数据
         if(userList != null){
             return userList;
