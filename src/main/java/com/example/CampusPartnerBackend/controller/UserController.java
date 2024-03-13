@@ -12,6 +12,7 @@ import com.example.CampusPartnerBackend.modal.domain.request.UserLoginRequest;
 import com.example.CampusPartnerBackend.modal.domain.request.UserRegisterRequest;
 import com.example.CampusPartnerBackend.service.UserService;
 import io.swagger.models.auth.In;
+import net.sf.jsqlparser.expression.operators.relational.GreaterThanEquals;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -155,9 +156,8 @@ public class UserController {
     }
 
     @GetMapping("/recommend")
-    public BaseResponse<Page<User>> recommendUser(@RequestParam int pageSize,int pageNum){
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        Page<User> page = userService.page(new Page<>(pageNum, pageSize), queryWrapper);
+    public BaseResponse<Page<User>> recommendUser(@RequestParam int pageSize,int pageNum,HttpServletRequest request){
+        Page<User> page = userService.selectByRedis(pageNum,pageSize, request);
         return ResultUtils.success(page);
     }
 

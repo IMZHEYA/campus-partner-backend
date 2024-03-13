@@ -1,5 +1,6 @@
 package com.example.CampusPartnerBackend.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.CampusPartnerBackend.modal.domain.User;
 
@@ -32,4 +33,6 @@ public interface UserService extends IService<User> {
 
 
     int updateUser(User user ,User loginUser);
+
+    Page<User> selectByRedis(int pageNum, int pageSize, HttpServletRequest request);
 }

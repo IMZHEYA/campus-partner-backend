@@ -1,8 +1,10 @@
 package com.example.CampusPartnerBackend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.CampusPartnerBackend.common.ErrorCode;
+import com.example.CampusPartnerBackend.common.ResultUtils;
 import com.example.CampusPartnerBackend.constant.UserConstant;
 import com.example.CampusPartnerBackend.exception.BusinessException;
 import com.example.CampusPartnerBackend.service.UserService;
@@ -12,6 +14,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
@@ -19,6 +22,7 @@ import org.springframework.util.DigestUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -37,6 +41,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private RedisTemplate redisTemplate;
 
     final String SALT = "yupi";
 
@@ -267,6 +274,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         int i = userMapper.updateById(user);
         return i;
+    }
+
+    @Override
+    public Page<User> selectByRedis(int pageNum,int pageSize,HttpServletRequest request) {
+        User loginUser = getLoginUser(request);
+        String redisKey = String.format("Campus:partner:%s",loginUser.getId());
+        Page<User> userList = (Page<User>) redisTemplate.opsForValue().get(redisKey);
+        //缓存中有数据
+        if(userList != null){
+            return userList;
+        }
+        //缓存中无数据
+//        从数据库中查
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        //pageNum当前请求页码   pageSize每页数据条数
+        Page<User> page = this.page(new Page<>(pageNum, pageSize), queryWrapper);
+        //写入缓存
+        try {
+            redisTemplate.opsForValue().set(redisKey,page,20, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            log.error("set redisKey error",e);
+        }
+        return page;
     }
 }
 
