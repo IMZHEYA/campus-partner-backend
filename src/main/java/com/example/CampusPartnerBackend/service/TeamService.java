@@ -2,6 +2,7 @@ package com.example.CampusPartnerBackend.service;
 
 import com.example.CampusPartnerBackend.modal.domain.Team;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.CampusPartnerBackend.modal.domain.User;
 
 /**
 * @author 13425
@@ -9,5 +10,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-03-15 11:31:34
 */
 public interface TeamService extends IService<Team> {
-
+    Long addTeam(Team team, User loginUser);
 }

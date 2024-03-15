@@ -7,9 +7,12 @@ import com.example.CampusPartnerBackend.Mapper.TeamMapper;
 import com.example.CampusPartnerBackend.common.BaseResponse;
 import com.example.CampusPartnerBackend.common.ErrorCode;
 import com.example.CampusPartnerBackend.common.ResultUtils;
+import com.example.CampusPartnerBackend.constant.UserConstant;
 import com.example.CampusPartnerBackend.exception.BusinessException;
 import com.example.CampusPartnerBackend.modal.domain.Team;
+import com.example.CampusPartnerBackend.modal.domain.User;
 import com.example.CampusPartnerBackend.modal.dto.TeamQuery;
+import com.example.CampusPartnerBackend.modal.request.TeamAddRequest;
 import com.example.CampusPartnerBackend.service.TeamService;
 import com.example.CampusPartnerBackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -29,17 +33,19 @@ public class TeamController {
     @Resource
     private TeamService teamService;
 
+    @Resource
+    private UserService userService;
 
     @PostMapping("/add")
-    public BaseResponse<Long> addTeam(@RequestBody Team team) {
-        if (team == null) {
+    public BaseResponse<Long> addTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request) {
+        if (teamAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean save = teamService.save(team);
-        if (!save) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "添加失败");
-        }
-        return ResultUtils.success(team.getId());
+        Team team = new Team();
+        BeanUtils.copyProperties(teamAddRequest,team);
+        User loginUser = userService.getLoginUser(request);
+        Long teamId = teamService.addTeam(team, loginUser);
+        return ResultUtils.success(teamId);
     }
 
     @PostMapping("/delete")
@@ -78,13 +84,18 @@ public class TeamController {
         return ResultUtils.success(team);
     }
 
+    /**
+     * 前端闯入一些信息，可以查询到与这些信息相匹配的队伍信息
+     * @param teamQuery
+     * @return
+     */
     @GetMapping("/list")
     public BaseResponse<List<Team>> listTeams(TeamQuery teamQuery) {
         if (teamQuery == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Team team = new Team();
-        BeanUtils.copyProperties(team,teamQuery);
+        BeanUtils.copyProperties(teamQuery,team);
         QueryWrapper<Team> queryWrapper = new QueryWrapper<>(team);
         List<Team> teamList = teamService.list(queryWrapper);
         return ResultUtils.success(teamList);
@@ -96,7 +107,7 @@ public class TeamController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Team team = new Team();
-        BeanUtils.copyProperties(team,teamQuery);
+        BeanUtils.copyProperties(teamQuery,team);
         QueryWrapper<Team> teamQueryWrapper = new QueryWrapper<>(team);
         int current = teamQuery.getPageNum();
         int pageSize = teamQuery.getPageSize();
