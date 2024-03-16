@@ -37,4 +37,8 @@ public class TeamQuery extends pageRequest{
      * 0 - 公开，1 - 私有，2 - 加密
      */
     private Integer status;
+    /**
+     * 搜索关键词
+     */
+    private String searchText;
 }

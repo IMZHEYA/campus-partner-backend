@@ -3,6 +3,12 @@ package com.example.CampusPartnerBackend.service;
 import com.example.CampusPartnerBackend.modal.domain.Team;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.CampusPartnerBackend.modal.domain.User;
+import com.example.CampusPartnerBackend.modal.dto.TeamQuery;
+import com.example.CampusPartnerBackend.modal.request.TeamUpdateRequest;
+import com.example.CampusPartnerBackend.modal.vo.TeamUserVO;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author 13425
@@ -11,4 +17,10 @@ import com.example.CampusPartnerBackend.modal.domain.User;
 */
 public interface TeamService extends IService<Team> {
     Long addTeam(Team team, User loginUser);
+
+
+    List<TeamUserVO> listTeams(TeamQuery teamQuery, boolean isAdmin);
+
+
+    boolean updateTeam(TeamUpdateRequest teamUpdateRequest, User loginUser);
 }

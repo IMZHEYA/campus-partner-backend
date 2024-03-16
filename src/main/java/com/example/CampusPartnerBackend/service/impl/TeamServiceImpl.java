@@ -7,17 +7,23 @@ import com.example.CampusPartnerBackend.exception.BusinessException;
 import com.example.CampusPartnerBackend.modal.domain.Team;
 import com.example.CampusPartnerBackend.modal.domain.User;
 import com.example.CampusPartnerBackend.modal.domain.UserTeam;
+import com.example.CampusPartnerBackend.modal.dto.TeamQuery;
 import com.example.CampusPartnerBackend.modal.enums.TeamStatusEnum;
+import com.example.CampusPartnerBackend.modal.request.TeamUpdateRequest;
+import com.example.CampusPartnerBackend.modal.vo.TeamUserVO;
+import com.example.CampusPartnerBackend.modal.vo.UserVO;
 import com.example.CampusPartnerBackend.service.TeamService;
 import com.example.CampusPartnerBackend.Mapper.TeamMapper;
+import com.example.CampusPartnerBackend.service.UserService;
 import com.example.CampusPartnerBackend.service.UserTeamService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author 13425
@@ -29,6 +35,9 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         implements TeamService {
     @Resource
     private UserTeamService userTeamService;
+
+    @Resource
+    private UserService userService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -102,6 +111,92 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             throw new BusinessException(ErrorCode.SYSTEM_ERROR,"创建队伍失败");
         }
         return teamId;
+    }
+
+    @Override
+    public List<TeamUserVO> listTeams(TeamQuery teamQuery, boolean isAdmin) {
+        if(teamQuery == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        QueryWrapper<Team> queryWrapper = new QueryWrapper<>();
+        String searchText = teamQuery.getSearchText();
+        if(StringUtils.isNotBlank(searchText)){
+            queryWrapper.and(qw -> qw.like("name",searchText).or().like("description",searchText));
+        }
+        String name = teamQuery.getName();
+        if(StringUtils.isNotBlank(name)){
+            queryWrapper.like("name",name);
+        }
+        String description = teamQuery.getDescription();
+        if(StringUtils.isNotBlank(description)){
+            queryWrapper.like("description",description);
+        }
+        Integer maxNum = teamQuery.getMaxNum();
+        if(maxNum != null && maxNum > 0){
+            queryWrapper.eq("maxNum",maxNum);
+        }
+        Long userId = teamQuery.getUserId();
+        if(userId != null && userId > 0) {
+            queryWrapper.eq("userId",userId);
+        }
+        //状态校验
+        Integer status = teamQuery.getStatus();
+        TeamStatusEnum teamStatusEnum = TeamStatusEnum.getEnumByValue(status);
+        if(teamStatusEnum == null){
+            teamStatusEnum = TeamStatusEnum.PUBLIC;
+        }
+
+        if(!isAdmin && !TeamStatusEnum.PUBLIC.equals(teamStatusEnum)){
+            throw new BusinessException(ErrorCode.NO_AUTH);
+        }
+        queryWrapper.eq("status",teamStatusEnum.getValue());
+        //不展示已过期的队伍
+       //要求查询结果中的 "expireTime" 字段的值要么大于当前时间（未过期），要么为空（未设置过期时间）。
+        queryWrapper.and(qw -> qw.gt("expireTime",new Date()).or().isNull("expireTime"));
+        //查询出来
+        List<Team> teamList = this.list(queryWrapper);
+        if(CollectionUtils.isEmpty(teamList)){
+            return new ArrayList<>();
+        }
+
+        List<TeamUserVO> teamUserVOList = new ArrayList<>();
+        for(Team team : teamList){
+            //关联查询创建人的用户信息？
+            userId = team.getUserId();
+            if(userId == null){
+                continue;
+            }
+            TeamUserVO teamUserVO = new TeamUserVO();
+            BeanUtils.copyProperties(team,teamUserVO);
+            User user = userService.getUserById(userId);
+            //脱敏信息
+            if(user != null){
+                UserVO userVO = new UserVO();
+                BeanUtils.copyProperties(user,userVO);
+                teamUserVO.setCreateUser(userVO);
+            }
+            teamUserVOList.add(teamUserVO);
+        }
+        return teamUserVOList;
+    }
+
+    @Override
+    public boolean updateTeam(TeamUpdateRequest teamUpdateRequest,User loginUser) {
+        if (teamUpdateRequest == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Long id = teamUpdateRequest.getId();
+        if(id == null || id < 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Team oldTeam = this.getById(id);
+        boolean isAdmin = userService.isAdmin(loginUser);
+        if(oldTeam.getUserId() != loginUser.getId() && !isAdmin){
+            throw new BusinessException(ErrorCode.NO_AUTH);
+        }
+        Team team = new Team();
+        BeanUtils.copyProperties(teamUpdateRequest,team);
+        return this.updateById(team);
     }
 }
 
