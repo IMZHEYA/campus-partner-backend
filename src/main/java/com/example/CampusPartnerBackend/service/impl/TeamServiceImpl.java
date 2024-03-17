@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
@@ -278,6 +279,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean quitTeam(TeamQuitRequest teamQuitRequest, User loginUser) {
         if (teamQuitRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -339,6 +341,31 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
                 return userTeamService.remove(queryWrapper);
             }
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteTeam(Long id, User loginUser) {
+        if(id == null || id <= 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Team team = this.getById(id);
+        if(team == null){
+            throw new BusinessException(ErrorCode.NULL_ERROR,"队伍不存在");
+        }
+        Long userId = loginUser.getId();
+        if(!team.getUserId().equals(userId)){
+            throw new BusinessException(ErrorCode.NO_AUTH,"无访问权限");
+        }
+        UserTeam userTeam = new UserTeam();
+        userTeam.setTeamId(id);
+        QueryWrapper<UserTeam> queryWrapper = new QueryWrapper<>(userTeam);
+        boolean result = userTeamService.remove(queryWrapper);
+        if(!result){
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        boolean ans = teamService.removeById(id);
+        return ans;
     }
 }
 
