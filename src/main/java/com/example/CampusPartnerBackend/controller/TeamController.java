@@ -13,6 +13,7 @@ import com.example.CampusPartnerBackend.modal.domain.Team;
 import com.example.CampusPartnerBackend.modal.domain.User;
 import com.example.CampusPartnerBackend.modal.dto.TeamQuery;
 import com.example.CampusPartnerBackend.modal.request.TeamAddRequest;
+import com.example.CampusPartnerBackend.modal.request.TeamJoinRequest;
 import com.example.CampusPartnerBackend.modal.request.TeamUpdateRequest;
 import com.example.CampusPartnerBackend.modal.vo.TeamUserVO;
 import com.example.CampusPartnerBackend.service.TeamService;
@@ -116,5 +117,16 @@ public class TeamController {
         Page<Team> pageTeams = teamService.page(page, teamQueryWrapper);
         return ResultUtils.success(pageTeams);
     }
+
+    @PostMapping("/join")
+    public BaseResponse<Boolean> joinTeam(@RequestBody TeamJoinRequest teamJoinRequest,HttpServletRequest request){
+        if(teamJoinRequest == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUSer = userService.getLoginUser(request);
+        boolean result = teamService.joinTeam(teamJoinRequest,loginUSer);
+        return ResultUtils.success(result);
+    }
+
 
 }
