@@ -14,6 +14,7 @@ import com.example.CampusPartnerBackend.modal.domain.User;
 import com.example.CampusPartnerBackend.modal.dto.TeamQuery;
 import com.example.CampusPartnerBackend.modal.request.TeamAddRequest;
 import com.example.CampusPartnerBackend.modal.request.TeamJoinRequest;
+import com.example.CampusPartnerBackend.modal.request.TeamQuitRequest;
 import com.example.CampusPartnerBackend.modal.request.TeamUpdateRequest;
 import com.example.CampusPartnerBackend.modal.vo.TeamUserVO;
 import com.example.CampusPartnerBackend.service.TeamService;
@@ -125,6 +126,16 @@ public class TeamController {
         }
         User loginUSer = userService.getLoginUser(request);
         boolean result = teamService.joinTeam(teamJoinRequest,loginUSer);
+        return ResultUtils.success(result);
+    }
+
+    @PostMapping("/quit")
+    public BaseResponse<Boolean> quitTeam(@RequestBody TeamQuitRequest teamQuitRequest,HttpServletRequest request){
+        if(teamQuitRequest == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        boolean result =  teamService.quitTeam(teamQuitRequest,loginUser);
         return ResultUtils.success(result);
     }
 

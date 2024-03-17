@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.CampusPartnerBackend.modal.domain.User;
 import com.example.CampusPartnerBackend.modal.dto.TeamQuery;
 import com.example.CampusPartnerBackend.modal.request.TeamJoinRequest;
+import com.example.CampusPartnerBackend.modal.request.TeamQuitRequest;
 import com.example.CampusPartnerBackend.modal.request.TeamUpdateRequest;
 import com.example.CampusPartnerBackend.modal.vo.TeamUserVO;
 
@@ -26,4 +27,6 @@ public interface TeamService extends IService<Team> {
     boolean updateTeam(TeamUpdateRequest teamUpdateRequest, User loginUser);
 
     boolean joinTeam(TeamJoinRequest teamJoinRequest, User loginUSer);
+
+    boolean quitTeam(TeamQuitRequest teamQuitRequest, User loginUser);
 }
