@@ -3,6 +3,8 @@ package com.example.CampusPartnerBackend.modal.dto;
 import com.example.CampusPartnerBackend.common.pageRequest;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 队伍查询封装类
  */
@@ -13,6 +15,10 @@ public class TeamQuery extends pageRequest{
      */
     private Long id;
 
+    /**
+     * id列表
+     */
+    private List<Long> idList;
     /**
      * 队伍名称
      */
