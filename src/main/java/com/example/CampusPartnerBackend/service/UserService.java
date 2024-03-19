@@ -35,4 +35,6 @@ public interface UserService extends IService<User> {
     int updateUser(User user ,User loginUser);
 
     Page<User> selectByRedis(int pageNum, int pageSize, HttpServletRequest request);
+
+    List<User> matchUsers(long num, User loginUser);
 }

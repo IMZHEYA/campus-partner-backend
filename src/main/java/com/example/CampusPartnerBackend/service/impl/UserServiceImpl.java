@@ -10,10 +10,12 @@ import com.example.CampusPartnerBackend.exception.BusinessException;
 import com.example.CampusPartnerBackend.service.UserService;
 import com.example.CampusPartnerBackend.modal.domain.User;
 import com.example.CampusPartnerBackend.Mapper.UserMapper;
+import com.example.CampusPartnerBackend.utils.AlgorithmUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.util.Pair;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -221,11 +223,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Override
     public User getUserById(Long id) {
-        if(id < 0){
+        if (id < 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User user = userMapper.selectById(id);
-        if(user == null){
+        if (user == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User safetyUser = getSafetyUser(user);
@@ -256,7 +258,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public User getLoginUser(HttpServletRequest request) {
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         User user = (User) userObj;
-        if(user == null){
+        if (user == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
         User safetyUser = getSafetyUser(user);
@@ -266,14 +268,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public int updateUser(User user, User loginUser) {
         Long userId = user.getId();
-        if(userId <= 0){
+        if (userId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        if(!isAdmin(loginUser) && !userId.equals(loginUser.getId())){
+        if (!isAdmin(loginUser) && !userId.equals(loginUser.getId())) {
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
         User user1 = userMapper.selectById(userId);
-        if(user1 == null){
+        if (user1 == null) {
             throw new BusinessException(ErrorCode.NULL_ERROR);
         }
         int i = userMapper.updateById(user);
@@ -281,27 +283,77 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     @Override
-    public Page<User> selectByRedis(int pageNum,int pageSize,HttpServletRequest request) {
+    public Page<User> selectByRedis(int pageNum, int pageSize, HttpServletRequest request) {
         User loginUser = getLoginUser(request);
-        String redisKey = String.format("Campus:partner:%s",loginUser.getId());
+        String redisKey = String.format("Campus:partner:%s", loginUser.getId());
         Page<User> userList = (Page<User>) redisTemplate.opsForValue().get(redisKey);
 
         //缓存中有数据
-        if(userList != null){
+        if (userList != null) {
             return userList;
         }
         //缓存中无数据
-//        从数据库中查
+        //从数据库中查
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         //pageNum当前请求页码   pageSize每页数据条数
         Page<User> page = this.page(new Page<>(pageNum, pageSize), queryWrapper);
         //写入缓存
         try {
-            redisTemplate.opsForValue().set(redisKey,page,20, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(redisKey, page, 20, TimeUnit.MINUTES);
         } catch (Exception e) {
-            log.error("set redisKey error",e);
+            log.error("set redisKey error", e);
         }
         return page;
+    }
+
+    @Override
+    public List<User> matchUsers(long num, User loginUser) {
+        //先全部查出来，不查tags为空的，只查id与tags两列
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("id", "tags");
+        queryWrapper.isNotNull("tags");
+        List<User> userList = this.list();
+        Gson gson = new Gson();
+        String tag = loginUser.getTags();
+        List<String> tagList1 = gson.fromJson(tag, new TypeToken<List<String>>() {
+        }.getType());
+        //答案
+        List<Pair<User, Long>> list = new ArrayList<>();
+        //反序列化为list<String>
+        for (int i = 0; i < userList.size(); i++) {
+            User user = userList.get(i);
+            String tags = user.getTags();
+            List<String> tagsList2 = gson.fromJson(tags, new TypeToken<List<String>>() {
+            }.getType());
+            //依次计算所有用户与当前用户的匹配度（无标签和为当前用户就跳过）
+            if (StringUtils.isEmpty(tags) || Objects.equals(user.getId(), loginUser.getId())) {
+                continue;
+            }
+            long distance = AlgorithmUtils.minDistance(tagList1, tagsList2);
+            list.add(new Pair<>(user,distance));
+        }
+        //按编辑距离从小到大排序
+        List<Pair<User, Long>> topUserPairList = list.stream()
+                .sorted((a, b) -> (int) (a.getValue() - b.getValue()))
+                .limit(num)
+                .collect(Collectors.toList());
+        // 原本顺序的 userId 列表
+        List<Long> userIdList = topUserPairList.stream().map(pair -> pair.getKey().getId()).collect(Collectors.toList());
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("id",userIdList);//变无序了
+        // 1, 3, 2
+        // User1、User2、User3
+        // 1 => User1, 2 => User2, 3 => User3
+        Map<Long, List<User>> listMap = this.list(userQueryWrapper)
+                .stream()
+                .map(user -> getSafetyUser(user))
+                .collect(Collectors.groupingBy(User::getId));
+        //最终列表
+        List<User> finalUserList = new ArrayList<>();
+        for(Long userId:userIdList){
+            finalUserList.add(listMap.get(userId).get(0));
+        }
+        return finalUserList;
     }
 }
 

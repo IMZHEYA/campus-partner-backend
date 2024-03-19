@@ -139,14 +139,14 @@ public class UserController {
     /**
      * 更新用户信息
      *
-     * @param user      要修改的用户
+     * @param user    要修改的用户
      * @param request 请求参数
      * @return
      */
     @PostMapping("/update")
     public BaseResponse<Integer> updateUser(@RequestBody User user, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
-        if(user == null){
+        if (user == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         int result = userService.updateUser(user, loginUser);
@@ -154,9 +154,26 @@ public class UserController {
     }
 
     @GetMapping("/recommend")
-    public BaseResponse<Page<User>> recommendUser(@RequestParam int pageSize,int pageNum,HttpServletRequest request){
-        Page<User> page = userService.selectByRedis(pageNum,pageSize, request);
+    public BaseResponse<Page<User>> recommendUser(@RequestParam int pageSize, int pageNum, HttpServletRequest request) {
+        Page<User> page = userService.selectByRedis(pageNum, pageSize, request);
         return ResultUtils.success(page);
+    }
+
+    /**
+     * 根据标签匹配程度给用户推荐信息
+     *
+     * @param num     展示多少用户
+     * @param request
+     * @return
+     */
+    @GetMapping("/match")
+    public BaseResponse<List<User>> matchUsers(long num, HttpServletRequest request) {
+        if (num <= 0 || num > 20) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        List<User> userList = userService.matchUsers(num, loginUser);
+        return ResultUtils.success(userList);
     }
 
 
