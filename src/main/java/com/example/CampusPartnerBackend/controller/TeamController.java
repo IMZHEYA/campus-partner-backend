@@ -122,9 +122,15 @@ public class TeamController {
                 team.setHasJoin(hasJoin);
             });
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        } catch (Exception e) {}
+        //3，队伍已加入用户数
+        QueryWrapper<UserTeam> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("teamId",teamIdList);
+        List<UserTeam> userTeamList = userTeamService.list(queryWrapper);
+        Map<Long, List<UserTeam>> teamIdUserTeamList  = userTeamList.stream().collect(Collectors.groupingBy(UserTeam::getTeamId));
+        teamList.forEach(team -> {
+            team.setHasJoinNum(teamIdUserTeamList.getOrDefault(team.getId(),new ArrayList<>()).size());
+        });
         return ResultUtils.success(teamList);
     }
 
