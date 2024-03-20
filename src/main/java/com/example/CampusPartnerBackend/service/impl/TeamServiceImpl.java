@@ -21,7 +21,10 @@ import com.example.CampusPartnerBackend.Mapper.TeamMapper;
 import com.example.CampusPartnerBackend.service.UserService;
 import com.example.CampusPartnerBackend.service.UserTeamService;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -29,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 13425
@@ -46,6 +50,9 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
 
     @Resource
     private TeamService teamService;
+
+    @Resource
+    private RedissonClient redissonClient;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -128,12 +135,12 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         }
         QueryWrapper<Team> queryWrapper = new QueryWrapper<>();
         Long id = teamQuery.getId();
-        if(id != null && id > 0){
-            queryWrapper.eq("id",id);
+        if (id != null && id > 0) {
+            queryWrapper.eq("id", id);
         }
         List<Long> idList = teamQuery.getIdList();
-        if(org.apache.commons.collections.CollectionUtils.isNotEmpty(idList)){
-            queryWrapper.in("id",idList);
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(idList)) {
+            queryWrapper.in("id", idList);
         }
         String searchText = teamQuery.getSearchText();
         if (StringUtils.isNotBlank(searchText)) {
@@ -255,35 +262,54 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         if (TeamStatusEnum.PRIVATE.equals(statusEnum)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "禁止加入私有队伍");
         }
-        //用户最多加入五个队伍
-        Long userId = loginUSer.getId();
-        QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
-        userTeamQueryWrapper.eq("userId", userId);
-        long count = userTeamService.count(userTeamQueryWrapper);
-        if (count > 5) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "最多创建和加入五个队伍");
+
+        RLock lock = redissonClient.getLock("yupao:lock");
+        try {
+            while(true){
+                if (lock.tryLock(0, -1, TimeUnit.MILLISECONDS)) {
+                    // todo 实际要执行的方法
+                    //用户最多加入五个队伍
+                    Long userId = loginUSer.getId();
+                    QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
+                    userTeamQueryWrapper.eq("userId", userId);
+                    long count = userTeamService.count(userTeamQueryWrapper);
+                    if (count > 5) {
+                        throw new BusinessException(ErrorCode.PARAMS_ERROR, "最多创建和加入五个队伍");
+                    }
+                    //.不能重复加入已加入的队伍（幂等性）
+                    userTeamQueryWrapper = new QueryWrapper<>();
+                    userTeamQueryWrapper.eq("userId", userId);
+                    userTeamQueryWrapper.eq("teamId", teamId);
+                    count = userTeamService.count(userTeamQueryWrapper);
+                    if (count > 0) {
+                        throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户已加入该队伍");
+                    }
+                    //用户只能加入未满的队伍
+                    userTeamQueryWrapper = new QueryWrapper<>();
+                    userTeamQueryWrapper.eq("teamId", teamId);
+                    count = userTeamService.count(userTeamQueryWrapper);
+                    if (count >= team.getMaxNum()) {
+                        throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍已满");
+                    }
+                    //新增用户-队伍关系
+                    UserTeam userTeam = new UserTeam();
+                    userTeam.setUserId(userId);
+                    userTeam.setTeamId(teamId);
+                    boolean save = userTeamService.save(userTeam);
+                    return save;
+                }
+            }
+        } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
+            return false;
+        } finally {
+            // 只能释放自己的锁
+            if (lock.isHeldByCurrentThread()) {
+                System.out.println("unLock: " + Thread.currentThread().getId());
+                lock.unlock();
+            }
         }
-        //用户只能加入未满的队伍
-        userTeamQueryWrapper = new QueryWrapper<>();
-        userTeamQueryWrapper.eq("teamId", teamId);
-        count = userTeamService.count(userTeamQueryWrapper);
-        if (count >= team.getMaxNum()) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍已满");
-        }
-        //.不能重复加入已加入的队伍（幂等性）
-        userTeamQueryWrapper = new QueryWrapper<>();
-        userTeamQueryWrapper.eq("userId", userId);
-        userTeamQueryWrapper.eq("teamId", teamId);
-        count = userTeamService.count(userTeamQueryWrapper);
-        if (count > 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户已加入该队伍");
-        }
-        //新增用户-队伍关系
-        UserTeam userTeam = new UserTeam();
-        userTeam.setUserId(userId);
-        userTeam.setTeamId(teamId);
-        boolean save = userTeamService.save(userTeam);
-        return save;
+
     }
 
     @Override
@@ -325,7 +351,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             if (team.getUserId().equals(userId)) {
                 //权限转移给第二早加入的用户
                 //1.查询前两个最早加入用户
-                QueryWrapper<UserTeam>userTeamQueryWrapper = new QueryWrapper<>();
+                QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
                 userTeamQueryWrapper.eq("teamId", teamId);
                 userTeamQueryWrapper.last("order by id asc limit 2");
                 List<UserTeam> userTeamList = userTeamService.list(userTeamQueryWrapper);
@@ -354,22 +380,22 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteTeam(Long id, User loginUser) {
-        if(id == null || id <= 0){
+        if (id == null || id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Team team = this.getById(id);
-        if(team == null){
-            throw new BusinessException(ErrorCode.NULL_ERROR,"队伍不存在");
+        if (team == null) {
+            throw new BusinessException(ErrorCode.NULL_ERROR, "队伍不存在");
         }
         Long userId = loginUser.getId();
-        if(!team.getUserId().equals(userId)){
-            throw new BusinessException(ErrorCode.NO_AUTH,"无访问权限");
+        if (!team.getUserId().equals(userId)) {
+            throw new BusinessException(ErrorCode.NO_AUTH, "无访问权限");
         }
         UserTeam userTeam = new UserTeam();
         userTeam.setTeamId(id);
         QueryWrapper<UserTeam> queryWrapper = new QueryWrapper<>(userTeam);
         boolean result = userTeamService.remove(queryWrapper);
-        if(!result){
+        if (!result) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
         boolean ans = teamService.removeById(id);
