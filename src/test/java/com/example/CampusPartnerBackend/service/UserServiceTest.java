@@ -91,12 +91,12 @@ class UserServiceTest {
         List<User> userList = new ArrayList<>();
         for(int i = 0; i <= num; i ++){
             User user = new User();
-            user.setUsername("");
+            user.setUsername("杏儿");
             user.setUserAccount("1234");
-            user.setAvatarUrl("");
+            user.setAvatarUrl("https://img2.baidu.com/it/u=4107924847,69017323&fm=253&app=120&size=w931&n=0&f=JPEG&fmt=auto?sec=1711126800&t=74d96cfa7d3219cc50b4d1e0e071d551");
             user.setGender(0);
-            user.setUserPassword("12345678");
-            user.setPhone("123");
+            user.setUserPassword("12345678" + i);
+            user.setPhone("1232558165@qq.com");
             user.setEmail("321");
             user.setCreateTime(new Date());
             user.setUpdateTime(new Date());

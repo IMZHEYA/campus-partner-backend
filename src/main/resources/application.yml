@@ -4,9 +4,9 @@ spring:
     name: campus-partner-backend
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: dyz200472
-    url: jdbc:mysql://localhost:3306/zhezi
+    username: dogyupi
+    password: yupi666
+    url: jdbc:mysql://106.54.12.71:3306/yupao
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -21,6 +21,9 @@ spring:
     database: 0
   main:
     allow-circular-references: true
+  jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
 server:
   port: 8080
   servlet:

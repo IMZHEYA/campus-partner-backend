@@ -1,6 +1,7 @@
 package com.example.CampusPartnerBackend.modal.request;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -27,6 +28,7 @@ public class TeamAddRequest {
     /**
      * 过期时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Date expireTime;
 
     /**
