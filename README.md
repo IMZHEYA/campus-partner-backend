@@ -139,6 +139,7 @@
 ![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/55465149-b95b-40f5-a395-f5efd67d152a)
 
 ![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/787d6ea0-e6fd-42e8-9466-cdb4b2345b52)
+
 搜索结果
 
 ![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/8785c23e-54f8-40b7-b39b-c43a3b54a270)
@@ -174,6 +175,7 @@
 ![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/4f677c7a-07fa-40aa-8a85-56c9ca62fda5)
 ### 查看加入的队伍
 ![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/62697419-db80-4ee6-833d-48f074787de9)
+
 （换个号）
 
 ![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/e322b790-7322-4f45-a48c-a7aac5c7b2f8)
