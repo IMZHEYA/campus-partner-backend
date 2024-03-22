@@ -45,4 +45,6 @@ public class TeamAddRequest {
      * 密码
      */
     private String password;
+
+    private String imageUrl;
 }
