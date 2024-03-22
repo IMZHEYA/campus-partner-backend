@@ -4,9 +4,9 @@ spring:
     name: campus-partner-backend
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: dogyupi
-    password: yupi666
-    url: jdbc:mysql://106.54.12.71:3306/yupao
+    username:
+    password:
+    url:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
