@@ -123,27 +123,59 @@
 
 ## 部分界面展示
 
+### 登录界面
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/d5cfe013-8782-4524-8f50-f8111ad4a334)
+### 主页推荐
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/98fa330c-2656-403e-a40e-aa79789e393c)
 
+### 心动模式
+（推荐标签相似用户）
 
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/c5349b52-f13d-4856-b907-e2aa87d75675)
 
+### 搜索用户
+指定标签
 
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/55465149-b95b-40f5-a395-f5efd67d152a)
 
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/787d6ea0-e6fd-42e8-9466-cdb4b2345b52)
+搜索结果
 
-**首页**
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/8785c23e-54f8-40b7-b39b-c43a3b54a270)
+### 队伍页面
 
+可以看到公开和加密的队伍，私有队伍目前不可见
 
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/4d74cc57-dbe6-4f59-800c-a44f3102e201)
 
-**队伍界面**
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/d74bff10-d504-4f8e-83fd-369d30483f1f)
 
+创建人可见更新队伍，解散队伍，非创建人只能看见加入队伍或者退出队伍
 
+### 更新队伍
+更新成加密队伍，要设置密码
 
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/2fe4de58-1608-4e3a-bb83-781937dfc60f)
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/bf9493eb-b411-4db9-b06e-9390db6ef73b)
+### 个人信息
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/997c583a-7747-43c7-af7e-3a1b9165b1d3)
+### 修改信息
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/0162b920-c46a-4f76-bada-fe84d0248dfc)
 
-**我的界面**
+除账号，编号，注册时间和头像暂不可修改，其他皆可修改
+（比如修改昵称）
 
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/4869ea6d-2249-4e7a-80a8-ce6df63d4bd6)
+### 查看创建的队伍
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/a0fb3957-8cdc-48d0-a197-5cb72f132975)
 
+同时可在此创建队伍（可以设置加入的最大人数）
 
-**个人信息界面**
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/4f677c7a-07fa-40aa-8a85-56c9ca62fda5)
+### 查看加入的队伍
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/62697419-db80-4ee6-833d-48f074787de9)
+（换个号）
 
+![image](https://github.com/Serendipityzhezi/campus-partner-backend/assets/122675076/e322b790-7322-4f45-a48c-a7aac5c7b2f8)
 
-
-**根据标签搜索界面**
+（貌似还有一丢丢小bug 在查看已加入队伍页面，队伍人数为null，还有不显示已加入的队伍退出队伍）
