@@ -11,6 +11,8 @@ import com.example.CampusPartnerBackend.modal.domain.User;
 import com.example.CampusPartnerBackend.modal.request.UserLoginRequest;
 import com.example.CampusPartnerBackend.modal.request.UserRegisterRequest;
 import com.example.CampusPartnerBackend.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -19,15 +21,16 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Api(tags = "用户相关接口")
 @RestController
 @RequestMapping("/user")
 //@CrossOrigin(originPatterns = {"http://localhost:3000"}, allowCredentials = "true", allowedHeaders = {"*"})
-//@CrossOrigin(originPatterns = {"//http://localhost:3000"},allowCredentials = "true")
+//@CrossOrigin(originPatterns = {"http://user.zhezi.online"}, allowCredentials = "true")
 public class UserController {
     @Resource
     private UserService userService;
 
+    @ApiOperation(value = "用户注册")
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
@@ -44,6 +47,7 @@ public class UserController {
         return ResultUtils.success(result);
     }
 
+    @ApiOperation(value = "用户登录")
     @PostMapping("/login")
     public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
@@ -65,7 +69,7 @@ public class UserController {
      * @param request
      * @return
      */
-
+    @ApiOperation(value = "用户登出")
     @PostMapping("/loginout")
     public BaseResponse<Integer> userLogout(HttpServletRequest request) {
         if (request == null) {
@@ -83,6 +87,7 @@ public class UserController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "查询用户")
     @GetMapping("/search")
     public BaseResponse<List<User>> searchUser(String username, HttpServletRequest request) {
         if (!userService.isAdmin(request)) {
@@ -100,6 +105,7 @@ public class UserController {
     /**
      * 删除用户
      */
+    @ApiOperation(value = "删除用户")
     @PostMapping("/delete")
     public BaseResponse<Boolean> deleteUser(@RequestBody Long id, HttpServletRequest request) {
         if (id < 0 || !userService.isAdmin(request)) {
@@ -112,6 +118,7 @@ public class UserController {
     /**
      * 根据标签查询用户
      */
+    @ApiOperation(value = "根据标签查询用户")
     @GetMapping("/search/tags")
     public BaseResponse<List<User>> searchUsersByTags(@RequestParam(required = false) List<String> tags) {
         if (CollectionUtils.isEmpty(tags)) {
@@ -124,6 +131,7 @@ public class UserController {
     /**
      * 获取当前登录的用户信息
      */
+    @ApiOperation(value = "获取当前登录的用户信息")
     @GetMapping("/current")
     public BaseResponse<User> getCurrentUser(HttpServletRequest request) {
         Object useObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
@@ -143,6 +151,7 @@ public class UserController {
      * @param request 请求参数
      * @return
      */
+    @ApiOperation(value = "更新用户信息")
     @PostMapping("/update")
     public BaseResponse<Integer> updateUser(@RequestBody User user, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
@@ -152,7 +161,7 @@ public class UserController {
         int result = userService.updateUser(user, loginUser);
         return ResultUtils.success(result);
     }
-
+    @ApiOperation(value = "推荐用户")
     @GetMapping("/recommend")
     public BaseResponse<Page<User>> recommendUser(@RequestParam int pageSize, int pageNum, HttpServletRequest request) {
         Page<User> page = userService.selectByRedis(pageNum, pageSize, request);
@@ -166,6 +175,7 @@ public class UserController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "根据标签匹配程度给用户推荐信息")
     @GetMapping("/match")
     public BaseResponse<List<User>> matchUsers(long num, HttpServletRequest request) {
         if (num <= 0 || num > 20) {

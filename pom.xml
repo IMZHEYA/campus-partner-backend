@@ -137,7 +137,6 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.example.CampusPartnerBackend.CampusPartnerBackendApplication</mainClass>
-                    <skip>true</skip>
                 </configuration>
                 <executions>
                     <execution>

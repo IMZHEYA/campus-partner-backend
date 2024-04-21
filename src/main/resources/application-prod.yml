@@ -1,0 +1,23 @@
+# DataSource Config
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: dogyupi
+    password: yupi666
+    url: jdbc:mysql://106.54.12.71:3306/yupao?useSSL=false
+  redis:
+    port: 6379
+    host: 127.0.0.1
+    database: 0
+  main:
+    allow-circular-references: true
+#server:
+#  reactive:
+#    session:
+#      cookie:
+#        domain: 106.54.12.71
+#        secure: false
+#        same-site: lax
+
+
+

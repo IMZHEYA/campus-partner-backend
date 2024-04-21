@@ -18,6 +18,8 @@ import com.example.CampusPartnerBackend.modal.vo.TeamUserVO;
 import com.example.CampusPartnerBackend.service.TeamService;
 import com.example.CampusPartnerBackend.service.UserService;
 import com.example.CampusPartnerBackend.service.UserTeamService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -27,10 +29,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
-
+@Api(tags = "队伍相关接口")
 @RestController
 @RequestMapping("/team")
-//@CrossOrigin(originPatterns = {"http://localhost:3000"}, allowCredentials = "true", allowedHeaders = {"*"})
+//@CrossOrigin(originPatterns = {"http://user.zhezi.online"}, allowCredentials = "true")
 @Slf4j
 public class TeamController {
 
@@ -43,6 +45,7 @@ public class TeamController {
     @Resource
     private UserTeamService userTeamService;
 
+    @ApiOperation(value = "添加队伍")
     @PostMapping("/add")
     public BaseResponse<Long> addTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request) {
         if (teamAddRequest == null) {
@@ -54,7 +57,7 @@ public class TeamController {
         Long teamId = teamService.addTeam(team, loginUser);
         return ResultUtils.success(teamId);
     }
-
+    @ApiOperation(value = "删除队伍")
     @PostMapping("/delete")
     public BaseResponse<Boolean> deleteTeam(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
@@ -67,7 +70,7 @@ public class TeamController {
         }
         return ResultUtils.success(true);
     }
-
+    @ApiOperation(value = "更新队伍")
     @PostMapping("/update")
     public BaseResponse<Boolean> updateTeam(@RequestBody TeamUpdateRequest teamUpdateRequest,HttpServletRequest request) {
         if (teamUpdateRequest == null) {
@@ -80,7 +83,7 @@ public class TeamController {
         }
         return ResultUtils.success(true);
     }
-
+    @ApiOperation(value = "获取队伍信息")
     @GetMapping("/get")
     public BaseResponse<Team> getTeamById(Long id) {
         if (id <= 0) {
@@ -98,6 +101,7 @@ public class TeamController {
      * @param teamQuery
      * @return
      */
+//    @ApiOperation(value = "查询队伍")
     @GetMapping("/list")
     public BaseResponse<List<TeamUserVO>> listTeams(TeamQuery teamQuery,HttpServletRequest request) {
         if (teamQuery == null) {
