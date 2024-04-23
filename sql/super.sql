@@ -254,32 +254,32 @@ CREATE TABLE `team`
 -- ----------------------------
 -- 用户表
 -- ----------------------------
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user`
+create table user
 (
-    `id`           bigint(20)                                               NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `username`     varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL COMMENT '用户昵称',
-    `password`     varchar(512) CHARACTER SET utf8 COLLATE utf8_general_ci  NOT NULL COMMENT '用户密码',
-    `user_account` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL COMMENT '账号',
-    `avatar_url`   varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci NULL     DEFAULT NULL COMMENT '用户头像',
-    `gender`       tinyint(4)                                                        DEFAULT 1 NULL DEFAULT NULL COMMENT '性别 0-女 1-男 2-保密',
-    `profile`      varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL,
-    `phone`        varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL COMMENT '手机号',
-    `email`        varchar(512) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL COMMENT '邮箱',
-    `status`       int(11)                                                  NULL     DEFAULT 0 COMMENT '用户状态，0为正常',
-    `role`         int(11)                                                  NOT NULL DEFAULT 0 COMMENT '用户角色 0-普通用户,1-管理员',
-    `friend_ids`   varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL,
-    `tags`         varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci NULL     DEFAULT NULL COMMENT '标签列表',
-    `create_time`  datetime                                                 NULL     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time`  datetime                                                 NULL     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `is_delete`    tinyint(4)                                               NOT NULL DEFAULT 0 COMMENT '是否删除',
-    PRIMARY KEY (`id`) USING BTREE,
-    UNIQUE INDEX `uniIdx_account` (`user_account`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 1000040
-  CHARACTER SET = utf8
-  COLLATE = utf8_general_ci
-  ROW_FORMAT = DYNAMIC;
+    id             bigint auto_increment comment 'id'
+        primary key,
+    username       varchar(255)                       null comment '用户昵称',
+    user_password  varchar(512)                       not null comment '用户密码',
+    user_account   varchar(255)                       null comment '账号',
+    avatar_url     varchar(1024)                      null comment '用户头像',
+    gender         tinyint                            null comment '性别 0-女 1-男 2-保密',
+    profile        varchar(255)                       null,
+    phone          varchar(128)                       null comment '手机号',
+    email          varchar(512)                       null comment '邮箱',
+    status         int      default 0                 null comment '用户状态，0为正常',
+    role           int      default 0                 not null comment '用户角色 0-普通用户,1-管理员',
+    friend_ids     varchar(255)                       null,
+    tags           varchar(1024)                      null comment '标签列表',
+    create_time    datetime default CURRENT_TIMESTAMP null comment '创建时间',
+    update_time    datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
+    is_delete      tinyint  default 0                 not null comment '是否删除',
+    check_password varchar(512)                       not null comment '确认密码',
+    constraint uniIdx_account
+        unique (user_account)
+)
+    charset = utf8mb3
+    row_format = DYNAMIC;
+
 
 -- ----------------------------
 -- 用户队伍表
