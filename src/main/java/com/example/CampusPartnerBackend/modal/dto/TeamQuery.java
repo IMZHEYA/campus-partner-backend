@@ -32,7 +32,7 @@ public class TeamQuery extends pageRequest{
     /**
      * 最大人数
      */
-    private Integer maxNum;
+    private Integer MaxNum;
 
     /**
      * 用户id

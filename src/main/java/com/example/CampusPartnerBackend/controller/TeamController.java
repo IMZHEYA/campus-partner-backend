@@ -1,19 +1,20 @@
 package com.example.CampusPartnerBackend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.CampusPartnerBackend.Mapper.TeamMapper;
 import com.example.CampusPartnerBackend.common.BaseResponse;
 import com.example.CampusPartnerBackend.common.ErrorCode;
 import com.example.CampusPartnerBackend.common.ResultUtils;
-import com.example.CampusPartnerBackend.constant.UserConstant;
 import com.example.CampusPartnerBackend.exception.BusinessException;
 import com.example.CampusPartnerBackend.modal.domain.Team;
 import com.example.CampusPartnerBackend.modal.domain.User;
 import com.example.CampusPartnerBackend.modal.domain.UserTeam;
 import com.example.CampusPartnerBackend.modal.dto.TeamQuery;
 import com.example.CampusPartnerBackend.modal.request.*;
+import com.example.CampusPartnerBackend.modal.request.team.TeamAddRequest;
+import com.example.CampusPartnerBackend.modal.request.team.TeamJoinRequest;
+import com.example.CampusPartnerBackend.modal.request.team.TeamQuitRequest;
+import com.example.CampusPartnerBackend.modal.request.team.TeamUpdateRequest;
 import com.example.CampusPartnerBackend.modal.vo.TeamUserVO;
 import com.example.CampusPartnerBackend.service.TeamService;
 import com.example.CampusPartnerBackend.service.UserService;
@@ -22,7 +23,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -72,7 +72,7 @@ public class TeamController {
     }
     @ApiOperation(value = "更新队伍")
     @PostMapping("/update")
-    public BaseResponse<Boolean> updateTeam(@RequestBody TeamUpdateRequest teamUpdateRequest,HttpServletRequest request) {
+    public BaseResponse<Boolean> updateTeam(@RequestBody TeamUpdateRequest teamUpdateRequest, HttpServletRequest request) {
         if (teamUpdateRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -83,7 +83,7 @@ public class TeamController {
         }
         return ResultUtils.success(true);
     }
-    @ApiOperation(value = "获取队伍信息")
+    @ApiOperation(value = "根据获取脱敏队伍信息")
     @GetMapping("/get")
     public BaseResponse<Team> getTeamById(Long id) {
         if (id <= 0) {
@@ -101,7 +101,7 @@ public class TeamController {
      * @param teamQuery
      * @return
      */
-//    @ApiOperation(value = "查询队伍")
+    @ApiOperation(value = "查询队伍")
     @GetMapping("/list")
     public BaseResponse<List<TeamUserVO>> listTeams(TeamQuery teamQuery,HttpServletRequest request) {
         if (teamQuery == null) {
@@ -138,6 +138,7 @@ public class TeamController {
         return ResultUtils.success(teamList);
     }
 
+    @ApiOperation(value = "分页查询队伍")
     @GetMapping("/list/page")
     public BaseResponse<Page<Team>> listTeamsByPage(TeamQuery teamQuery){
         if(teamQuery == null){
@@ -152,9 +153,9 @@ public class TeamController {
         Page<Team> pageTeams = teamService.page(page, teamQueryWrapper);
         return ResultUtils.success(pageTeams);
     }
-
+    @ApiOperation(value = "加入队伍")
     @PostMapping("/join")
-    public BaseResponse<Boolean> joinTeam(@RequestBody TeamJoinRequest teamJoinRequest,HttpServletRequest request){
+    public BaseResponse<Boolean> joinTeam(@RequestBody TeamJoinRequest teamJoinRequest, HttpServletRequest request){
         if(teamJoinRequest == null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -162,9 +163,9 @@ public class TeamController {
         boolean result = teamService.joinTeam(teamJoinRequest,loginUSer);
         return ResultUtils.success(result);
     }
-
+    @ApiOperation(value = "退出队伍")
     @PostMapping("/quit")
-    public BaseResponse<Boolean> quitTeam(@RequestBody TeamQuitRequest teamQuitRequest,HttpServletRequest request){
+    public BaseResponse<Boolean> quitTeam(@RequestBody TeamQuitRequest teamQuitRequest, HttpServletRequest request){
         if(teamQuitRequest == null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -179,6 +180,7 @@ public class TeamController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "获取当前用户已创建的队伍")
     @GetMapping("/list/my/create")
     public BaseResponse<List<TeamUserVO>> listMyCreateTeams(TeamQuery teamQuery,HttpServletRequest request) {
         if (teamQuery == null) {
@@ -189,7 +191,7 @@ public class TeamController {
         List<TeamUserVO> teamList = teamService.listTeams(teamQuery,true);
         return ResultUtils.success(teamList);
     }
-
+    @ApiOperation(value = "获取当前用户已加入的队伍")
     @GetMapping("/list/my/join")
     public BaseResponse<List<TeamUserVO>> listMyJoinTeams(TeamQuery teamQuery,HttpServletRequest request) {
         if (teamQuery == null) {

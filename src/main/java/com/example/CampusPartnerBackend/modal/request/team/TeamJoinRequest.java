@@ -1,4 +1,4 @@
-package com.example.CampusPartnerBackend.modal.request;
+package com.example.CampusPartnerBackend.modal.request.team;
 
 import lombok.Data;
 
@@ -23,4 +23,7 @@ public class TeamJoinRequest implements Serializable {
      * 密码
      */
     private String password;
+
+
+
 }

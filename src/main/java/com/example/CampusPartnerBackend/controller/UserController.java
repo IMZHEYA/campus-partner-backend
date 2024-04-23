@@ -8,8 +8,8 @@ import com.example.CampusPartnerBackend.common.ResultUtils;
 import com.example.CampusPartnerBackend.constant.UserConstant;
 import com.example.CampusPartnerBackend.exception.BusinessException;
 import com.example.CampusPartnerBackend.modal.domain.User;
-import com.example.CampusPartnerBackend.modal.request.UserLoginRequest;
-import com.example.CampusPartnerBackend.modal.request.UserRegisterRequest;
+import com.example.CampusPartnerBackend.modal.request.user.UserLoginRequest;
+import com.example.CampusPartnerBackend.modal.request.user.UserRegisterRequest;
 import com.example.CampusPartnerBackend.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,14 +36,13 @@ public class UserController {
         if (userRegisterRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        String userAccount = userRegisterRequest.getUserAccount();
+        String user_account = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
-        String userCode = userRegisterRequest.getUserCode();
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, userCode)) {
+        if (StringUtils.isAnyBlank(user_account, userPassword, checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Long result = userService.userRegister(userAccount, userPassword, checkPassword, userCode);
+        Long result = userService.userRegister(user_account, userPassword, checkPassword);
         return ResultUtils.success(result);
     }
 
@@ -53,12 +52,12 @@ public class UserController {
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        String userAccount = userLoginRequest.getUserAccount();
+        String user_account = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
-        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
+        if (StringUtils.isAnyBlank(user_account, userPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User user = userService.userLogin(userAccount, userPassword, request);
+        User user = userService.userLogin(user_account, userPassword, request);
         return ResultUtils.success(user);
     }
 

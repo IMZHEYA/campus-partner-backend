@@ -1,15 +1,14 @@
 package com.example.CampusPartnerBackend.service;
 
-import com.example.CampusPartnerBackend.modal.domain.Team;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.CampusPartnerBackend.modal.domain.Team;
 import com.example.CampusPartnerBackend.modal.domain.User;
 import com.example.CampusPartnerBackend.modal.dto.TeamQuery;
-import com.example.CampusPartnerBackend.modal.request.TeamJoinRequest;
-import com.example.CampusPartnerBackend.modal.request.TeamQuitRequest;
-import com.example.CampusPartnerBackend.modal.request.TeamUpdateRequest;
+import com.example.CampusPartnerBackend.modal.request.team.TeamJoinRequest;
+import com.example.CampusPartnerBackend.modal.request.team.TeamQuitRequest;
+import com.example.CampusPartnerBackend.modal.request.team.TeamUpdateRequest;
 import com.example.CampusPartnerBackend.modal.vo.TeamUserVO;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**

@@ -1,13 +1,13 @@
 package com.example.CampusPartnerBackend.modal.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import lombok.Data;
 
 /**
- * 用户
+ * 
  * @TableName user
  */
 @TableName(value ="user")
@@ -16,79 +16,106 @@ public class User implements Serializable {
     /**
      * id
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
      * 用户昵称
      */
+    @TableField(value = "username")
     private String username;
+
+    /**
+     * 用户密码
+     */
+    @TableField(value = "user_password")
+    private String userPassword;
 
     /**
      * 账号
      */
+    @TableField(value = "user_account")
     private String userAccount;
 
     /**
      * 用户头像
      */
+    @TableField(value = "avatar_url")
     private String avatarUrl;
 
     /**
-     * 性别
+     * 性别 0-女 1-男 2-保密
      */
+    @TableField(value = "gender")
     private Integer gender;
 
     /**
-     * 密码
+     * 
      */
-    private String userPassword;
+    @TableField(value = "profile")
+    private String profile;
 
     /**
-     * 电话
+     * 手机号
      */
+    @TableField(value = "phone")
     private String phone;
 
     /**
      * 邮箱
      */
+    @TableField(value = "email")
     private String email;
 
     /**
-     * 状态 0 - 正常
+     * 用户状态，0为正常
      */
-    private Integer userStatus;
+    @TableField(value = "status")
+    private Integer status;
 
     /**
-     * 创建时间
+     * 用户角色 0-普通用户,1-管理员
      */
-    private Date createTime;
+    @TableField(value = "role")
+    private Integer role;
 
     /**
      * 
      */
+    @TableField(value = "friend_ids")
+    private String friendIds;
+
+    /**
+     * 标签列表
+     */
+    @TableField(value = "tags")
+    private String tags;
+
+    /**
+     * 创建时间
+     */
+    @TableField(value = "create_time")
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    @TableField(value = "update_time")
     private Date updateTime;
 
     /**
      * 是否删除
      */
     @TableLogic
+    @TableField(value = "is_delete")
     private Integer isDelete;
 
     /**
-     * 用户角色 0 - 普通用户 1 - 管理员
+     * 确认密码
      */
-    private Integer userRole;
-
-    /**
-     * 用户编号
-     */
-    private String userCode;
+    @TableField(value = "check_password")
+    private String checkPassword;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
-    /**
-     * 标签
-     */
-    private String tags;
 }

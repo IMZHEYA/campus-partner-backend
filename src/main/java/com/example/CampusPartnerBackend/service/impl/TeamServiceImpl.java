@@ -11,26 +11,24 @@ import com.example.CampusPartnerBackend.modal.domain.User;
 import com.example.CampusPartnerBackend.modal.domain.UserTeam;
 import com.example.CampusPartnerBackend.modal.dto.TeamQuery;
 import com.example.CampusPartnerBackend.modal.enums.TeamStatusEnum;
-import com.example.CampusPartnerBackend.modal.request.TeamJoinRequest;
-import com.example.CampusPartnerBackend.modal.request.TeamQuitRequest;
-import com.example.CampusPartnerBackend.modal.request.TeamUpdateRequest;
+import com.example.CampusPartnerBackend.modal.request.team.TeamJoinRequest;
+import com.example.CampusPartnerBackend.modal.request.team.TeamQuitRequest;
+import com.example.CampusPartnerBackend.modal.request.team.TeamUpdateRequest;
 import com.example.CampusPartnerBackend.modal.vo.TeamUserVO;
 import com.example.CampusPartnerBackend.modal.vo.UserVO;
 import com.example.CampusPartnerBackend.service.TeamService;
-import com.example.CampusPartnerBackend.Mapper.TeamMapper;
+import com.example.CampusPartnerBackend.mapper.TeamMapper;
 import com.example.CampusPartnerBackend.service.UserService;
 import com.example.CampusPartnerBackend.service.UserTeamService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -67,8 +65,8 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         }
         //3.检验信息
         //(1).队伍人数>1且<=20
-        int maxNum = Optional.ofNullable(team.getMaxNum()).orElse(0);
-        if (maxNum <= 1 || maxNum > 20) {
+        int Max_num = Optional.ofNullable(team.getMaxNum()).orElse(0);
+        if (Max_num <= 1 || Max_num > 20) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍人数不符合要求");
         }
         //(2).队伍标题 <=20
@@ -95,8 +93,8 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             }
         }
         //6.超出时间 > 当前时间
-        Date expireTime = team.getExpireTime();
-        if (new Date().after(expireTime)) {
+        Date Expire_time = team.getExpireTime();
+        if (new Date().after(Expire_time)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "超时时间 > 过期时间");
         }
         //7.校验用户最多创建5个队伍
@@ -154,9 +152,9 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         if (StringUtils.isNotBlank(description)) {
             queryWrapper.like("description", description);
         }
-        Integer maxNum = teamQuery.getMaxNum();
-        if (maxNum != null && maxNum > 0) {
-            queryWrapper.eq("maxNum", maxNum);
+        Integer Max_num = teamQuery.getMaxNum();
+        if (Max_num != null && Max_num > 0) {
+            queryWrapper.eq("Max_num", Max_num);
         }
         Long userId = teamQuery.getUserId();
         if (userId != null && userId > 0) {
@@ -174,8 +172,8 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         }
         queryWrapper.eq("status", teamStatusEnum.getValue());
         //不展示已过期的队伍
-        //要求查询结果中的 "expireTime" 字段的值要么大于当前时间（未过期），要么为空（未设置过期时间）。
-        queryWrapper.and(qw -> qw.gt("expireTime", new Date()).or().isNull("expireTime"));
+        //要求查询结果中的 "Expire_time" 字段的值要么大于当前时间（未过期），要么为空（未设置过期时间）。
+        queryWrapper.and(qw -> qw.gt("Expire_time", new Date()).or().isNull("Expire_time"));
         //查询出来
         List<Team> teamList = this.list(queryWrapper);
         if (CollectionUtils.isEmpty(teamList)) {
@@ -245,8 +243,8 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         }
 
         //用户只能加入未过期的队伍
-        Date expireTime = team.getExpireTime();
-        if (expireTime != null && expireTime.before(new Date())) {
+        Date Expire_time = team.getExpireTime();
+        if (Expire_time != null && Expire_time.before(new Date())) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户只能加入未过期的队伍");
         }
         //如果加入的队伍是加密的，必须密码匹配才可以

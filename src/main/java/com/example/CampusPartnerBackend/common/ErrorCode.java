@@ -2,7 +2,7 @@ package com.example.CampusPartnerBackend.common;
 
 /**
  * @author Shier
- * CreateTime 2023/5/9 16:15
+ * Create_time 2023/5/9 16:15
  * 错误码
  */
 public enum ErrorCode {

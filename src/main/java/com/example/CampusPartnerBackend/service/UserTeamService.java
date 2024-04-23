@@ -1,7 +1,7 @@
 package com.example.CampusPartnerBackend.service;
 
-import com.example.CampusPartnerBackend.modal.domain.UserTeam;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.CampusPartnerBackend.modal.domain.UserTeam;
 
 /**
 * @author 13425

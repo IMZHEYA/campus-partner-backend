@@ -24,12 +24,12 @@ public class UserVO implements Serializable {
     /**
      * 账号
      */
-    private String userAccount;
+    private String user_account;
 
     /**
      * 用户头像
      */
-    private String avatarUrl;
+    private String Avatar_url;
 
     /**
      * 性别
@@ -54,12 +54,12 @@ public class UserVO implements Serializable {
     /**
      * 状态 0 - 正常
      */
-    private Integer userStatus;
+    private Integer Status;
 
     /**
      * 创建时间
      */
-    private Date createTime;
+    private Date Create_time;
 
     /**
      * 
@@ -69,7 +69,7 @@ public class UserVO implements Serializable {
     /**
      * 用户角色 0 - 普通用户 1 - 管理员
      */
-    private Integer userRole;
+    private Integer Role;
 
     /**
      * 星球编号

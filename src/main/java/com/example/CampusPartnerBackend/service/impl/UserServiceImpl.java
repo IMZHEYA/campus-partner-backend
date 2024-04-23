@@ -4,12 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.CampusPartnerBackend.common.ErrorCode;
-import com.example.CampusPartnerBackend.common.ResultUtils;
 import com.example.CampusPartnerBackend.constant.UserConstant;
 import com.example.CampusPartnerBackend.exception.BusinessException;
-import com.example.CampusPartnerBackend.service.UserService;
 import com.example.CampusPartnerBackend.modal.domain.User;
-import com.example.CampusPartnerBackend.Mapper.UserMapper;
+import com.example.CampusPartnerBackend.service.UserService;
+import com.example.CampusPartnerBackend.mapper.UserMapper;
 import com.example.CampusPartnerBackend.utils.AlgorithmUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -55,13 +54,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
 
     @Override
-    public Long userRegister(String userAccount, String userPassword, String checkPassword, String userCode) {
+    public Long userRegister(String user_account, String userPassword, String checkPassword) {
         //1.账户，密码，校验码为空
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, userCode)) {
+        if (StringUtils.isAnyBlank(user_account, userPassword, checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号，密码不能为空");
         }
         // 2.账户小于4位
-        if (userAccount.length() < 4) {
+        if (user_account.length() < 4) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账户过短");
         }
         // 3.密码，校验码小于8位
@@ -69,12 +68,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码过短");
         }
         //星球编号 <= 5位
-        if (userCode.length() > 5) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "星球编号过长");
-        }
+//        if (userCode.length() > 5) {
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR, "星球编号过长");
+//        }
         // 4.账户包含特殊字符（正则表达式）
         String validPattern = "[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
-        Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
+        Matcher matcher = Pattern.compile(validPattern).matcher(user_account);
         if (matcher.find()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号包含特殊字符");
         }
@@ -84,25 +83,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         // 6.账户重复,放在后面，可以节省查询次数，节省内存性能
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userAccount", userAccount);
+        queryWrapper.eq("user_account", user_account);
         Long count = userMapper.selectCount(queryWrapper);
         if (count > 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号已存在");
-        }
-        //星球编号不能重复
-        queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userCode", userCode);
-        count = userMapper.selectCount(queryWrapper);
-        if (count > 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "星球编号已存在");
         }
         //校验完成后，加密
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
         //注册成功，插入数据到数据库
         User user = new User();
-        user.setUserAccount(userAccount);
+        user.setUserAccount(user_account);
         user.setUserPassword(encryptPassword);
-        user.setUserCode(userCode);
         boolean result = this.save(user);
         if (!result) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "插入失败");
@@ -134,11 +125,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
         // 6.账户重复,放在后面，可以节省查询次数，节省内存性能
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userAccount", userAccount);
-        queryWrapper.eq("userPassword", userPassword);
+        queryWrapper.eq("user_account", userAccount);
+        queryWrapper.eq("user_password", userPassword);
         User user = userMapper.selectOne(queryWrapper);
         if (user == null) {
-            log.info("userPassword can not match userAccount");
+            log.info("userPassword can not match user_account");
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码错误");
         }
         //用户信息脱敏
@@ -158,9 +149,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         safetyUser.setGender(user.getGender());
         safetyUser.setPhone(user.getPhone());
         safetyUser.setEmail(user.getEmail());
-        safetyUser.setUserCode(user.getUserCode());
-        safetyUser.setUserStatus(user.getUserStatus());
-        safetyUser.setUserRole(user.getUserRole());
+        safetyUser.setStatus(user.getStatus());
+        safetyUser.setRole(user.getRole());
         safetyUser.setCreateTime(user.getCreateTime());
         safetyUser.setTags(user.getTags());
         return safetyUser;
@@ -240,7 +230,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public boolean isAdmin(HttpServletRequest request) {
         Object userobj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
         User user = (User) userobj;
-        if (user == null || user.getUserRole() != UserConstant.ADMIN_ROLE) {
+        if (user == null || user.getRole() != UserConstant.ADMIN_ROLE) {
             return false;
         }
         return true;
@@ -248,7 +238,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Override
     public boolean isAdmin(User loginUser) {
-        if (loginUser == null || loginUser.getUserRole() != UserConstant.ADMIN_ROLE) {
+        if (loginUser == null || loginUser.getRole() != UserConstant.ADMIN_ROLE) {
             return false;
         }
         return true;

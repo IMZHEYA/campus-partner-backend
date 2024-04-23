@@ -1,4 +1,4 @@
-package com.example.CampusPartnerBackend.modal.request;
+package com.example.CampusPartnerBackend.modal.request.user;
 
 import lombok.Data;
 

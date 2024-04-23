@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;

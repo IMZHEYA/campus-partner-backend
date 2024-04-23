@@ -32,12 +32,12 @@ public class TeamUserVO implements Serializable {
     /**
      * 最大人数
      */
-    private Integer maxNum;
+    private Integer Max_num;
 
     /**
      * 过期时间
      */
-    private Date expireTime;
+    private Date Expire_time;
 
     /**
      * 用户id
@@ -52,7 +52,7 @@ public class TeamUserVO implements Serializable {
     /**
      * 创建时间
      */
-    private Date createTime;
+    private Date Create_time;
 
     /**
      * 更新时间

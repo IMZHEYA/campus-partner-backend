@@ -1,21 +1,15 @@
 package com.example.CampusPartnerBackend.service;
 import java.util.*;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.example.CampusPartnerBackend.Mapper.UserMapper;
-import com.example.CampusPartnerBackend.common.ErrorCode;
-import com.example.CampusPartnerBackend.exception.BusinessException;
+import com.example.CampusPartnerBackend.mapper.UserMapper;
 import com.example.CampusPartnerBackend.modal.domain.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 @SpringBootTest
 class UserServiceTest {
@@ -37,7 +31,6 @@ class UserServiceTest {
         user.setUserPassword("123");
         user.setPhone("123");
         user.setEmail("321");
-        user.setUserCode("1");
         boolean result = userService.save(user);
         System.out.println(user.getId());
         Assertions.assertTrue(result);
@@ -75,7 +68,6 @@ class UserServiceTest {
             user.setEmail("321");
             user.setCreateTime(new Date());
             user.setUpdateTime(new Date());
-            user.setUserCode("");
             user.setTags("[]");
             userMapper.insert(user);
         }
@@ -100,7 +92,6 @@ class UserServiceTest {
             user.setEmail("321");
             user.setCreateTime(new Date());
             user.setUpdateTime(new Date());
-            user.setUserCode("");
             user.setTags("[]");
             userList.add(user);
         }
@@ -131,7 +122,6 @@ class UserServiceTest {
                     user.setEmail("321");
                     user.setCreateTime(new Date());
                     user.setUpdateTime(new Date());
-                    user.setUserCode("");
                     user.setTags("[]");
                     userList.add(user);
                     if (j % 10000 == 0) {

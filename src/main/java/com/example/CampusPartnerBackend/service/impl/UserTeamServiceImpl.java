@@ -3,7 +3,7 @@ package com.example.CampusPartnerBackend.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.CampusPartnerBackend.modal.domain.UserTeam;
 import com.example.CampusPartnerBackend.service.UserTeamService;
-import com.example.CampusPartnerBackend.Mapper.UserTeamMapper;
+import com.example.CampusPartnerBackend.mapper.UserTeamMapper;
 import org.springframework.stereotype.Service;
 
 /**
