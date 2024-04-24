@@ -6,7 +6,9 @@ import com.example.CampusPartnerBackend.common.ResultUtils;
 import com.example.CampusPartnerBackend.exception.BusinessException;
 import com.example.CampusPartnerBackend.modal.domain.Blog;
 import com.example.CampusPartnerBackend.modal.domain.User;
+import com.example.CampusPartnerBackend.modal.request.DeleteRequest;
 import com.example.CampusPartnerBackend.modal.request.blog.BlogAddRequest;
+import com.example.CampusPartnerBackend.modal.request.blog.BlogUpdateRequest;
 import com.example.CampusPartnerBackend.service.BlogService;
 import com.example.CampusPartnerBackend.service.UserService;
 import io.swagger.annotations.Api;
@@ -46,32 +48,32 @@ public class BlogController {
         Long blogId = blogService.addBlog(blog, loginUser);
         return ResultUtils.success(blogId);
     }
-//    @ApiOperation(value = "删除队伍")
-//    @PostMapping("/delete")
-//    public BaseResponse<Boolean> deleteBlog(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
-//        if (deleteRequest == null || deleteRequest.getId() <= 0) {
-//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-//        }
-//        User loginUser = userService.getLoginUser(request);
-//        boolean result = blogService.deleteBlog(deleteRequest.getId(),loginUser);
-//        if (!result) {
-//            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "删除失败");
-//        }
-//        return ResultUtils.success(true);
-//    }
-//    @ApiOperation(value = "更新队伍")
-//    @PostMapping("/update")
-//    public BaseResponse<Boolean> updateBlog(@RequestBody BlogUpdateRequest blogUpdateRequest,HttpServletRequest request) {
-//        if (blogUpdateRequest == null) {
-//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-//        }
-//        User loginUser = userService.getLoginUser(request);
-//        boolean result = blogService.updateBlog(blogUpdateRequest,loginUser);
-//        if (!result) {
-//            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "更新失败");
-//        }
-//        return ResultUtils.success(true);
-//    }
+    @ApiOperation(value = "删除博客")
+    @PostMapping("/delete")
+    public BaseResponse<Boolean> deleteBlog(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
+        if (deleteRequest == null || deleteRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        boolean result = blogService.deleteBlog(deleteRequest.getId(),loginUser);
+        if (!result) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "删除失败");
+        }
+        return ResultUtils.success(true);
+    }
+    @ApiOperation(value = "更新博客")
+    @PostMapping("/update")
+    public BaseResponse<Boolean> updateBlog(@RequestBody BlogUpdateRequest blogUpdateRequest, HttpServletRequest request) {
+        if (blogUpdateRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        boolean result = blogService.updateBlog(blogUpdateRequest,loginUser);
+        if (!result) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "更新失败");
+        }
+        return ResultUtils.success(true);
+    }
 //    @ApiOperation(value = "根据获取脱敏队伍信息")
 //    @GetMapping("/get")
 //    public BaseResponse<Blog> getBlogById(Long id) {

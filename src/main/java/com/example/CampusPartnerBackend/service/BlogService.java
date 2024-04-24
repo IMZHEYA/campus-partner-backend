@@ -3,6 +3,7 @@ package com.example.CampusPartnerBackend.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.CampusPartnerBackend.modal.domain.Blog;
 import com.example.CampusPartnerBackend.modal.domain.User;
+import com.example.CampusPartnerBackend.modal.request.blog.BlogUpdateRequest;
 
 /**
 * @author 13425
@@ -12,4 +13,8 @@ import com.example.CampusPartnerBackend.modal.domain.User;
 public interface BlogService extends IService<Blog> {
 
     Long addBlog(Blog blog, User loginUser);
+
+    boolean deleteBlog(Long id, User loginUser);
+
+    boolean updateBlog(BlogUpdateRequest blogUpdateRequest, User loginUser);
 }

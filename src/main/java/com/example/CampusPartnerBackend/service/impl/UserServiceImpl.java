@@ -1,5 +1,4 @@
 package com.example.CampusPartnerBackend.service.impl;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -126,7 +125,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 6.账户重复,放在后面，可以节省查询次数，节省内存性能
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_account", userAccount);
-        queryWrapper.eq("user_password", userPassword);
+        queryWrapper.eq("user_password", encryptPassword);
         User user = userMapper.selectOne(queryWrapper);
         if (user == null) {
             log.info("userPassword can not match user_account");
